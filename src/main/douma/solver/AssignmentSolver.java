@@ -18,8 +18,9 @@ public class AssignmentSolver {
     private static enum STATE {
         INIT,
         ZEROIZE_MINIMA,
-        MARK_ZEROES,
+        STAR_ZEROES,
         COVER_COLUMNS,
+        PRIME_ZEROES,
         DONE
     }
 
@@ -47,11 +48,14 @@ public class AssignmentSolver {
                 case ZEROIZE_MINIMA:
                     state = zeroizeRowMinima();
                     break;
-                case MARK_ZEROES:
+                case STAR_ZEROES:
                     state = markZeroesWithStars();
                     break;
                 case COVER_COLUMNS:
                     state = coverColumnsWithMarkedZeroes();
+                    break;
+                case PRIME_ZEROES:
+                    state = markZeroesWithPrimes();
                     break;
                 case DONE:
                     //TODO
@@ -80,7 +84,7 @@ public class AssignmentSolver {
 
     STATE zeroizeRowMinima() {
         assignmentMatrix.zeroizeRowMinimumInCostMatrix();
-        return STATE.MARK_ZEROES;
+        return STATE.STAR_ZEROES;
     }
 
     STATE markZeroesWithStars() {
@@ -89,7 +93,15 @@ public class AssignmentSolver {
     }
 
     STATE coverColumnsWithMarkedZeroes() {
-        assignmentMatrix.coverColumnsWithStarredZero();
+        int numCoverings = assignmentMatrix.coverColumnsWithStarredZero();
+        if (numCoverings == assignmentMatrix.getNumAssignmentsNecessaryForSolution()) {
+            return STATE.DONE;
+        }
+
+        return STATE.PRIME_ZEROES;
+    }
+
+    STATE markZeroesWithPrimes() {
         return STATE.DONE; // TODO
     }
 }

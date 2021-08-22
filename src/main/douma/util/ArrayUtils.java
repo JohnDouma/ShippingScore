@@ -96,7 +96,7 @@ public class ArrayUtils {
      * @throws IllegalArgumentException if the column length of starredZeroes is not equal to the length
      *         of coveredColumns
      */
-    public boolean[] coverColumnsWithStarredZeroes(final int[][] starredZeroes, boolean[] coveredColumns) {
+    public static boolean[] coverColumnsWithStarredZeroes(final int[][] starredZeroes, boolean[] coveredColumns) {
         if (starredZeroes[0].length != coveredColumns.length) {
             throw new IllegalArgumentException("The column size of starredZeroes must equal " +
                     "the length of coveredColumns");
@@ -110,5 +110,19 @@ public class ArrayUtils {
             }
         }
         return coveredColumns;
+    }
+
+    /**
+     * Return the number of <code>true</code></> elements in a boolean array
+     * @param array non-null array of boolean values
+     */
+    public static int numTrueValues(boolean[] array) {
+        int numTrue = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i]) {
+                numTrue++;
+            }
+        }
+        return numTrue;
     }
 }

@@ -16,6 +16,10 @@ public class AssignmentMatrix {
     private boolean[] rowCoverings;
     private boolean[] colCoverings;
 
+    // The algorithm expects the column size to be greater than or equal to the row size. If there
+    // are more addressed than drivers we transpose the matrix.
+    private boolean isTransposed;
+
     public AssignmentMatrix(final List<String> addresses, final List<String> names) {
         initializeFields(addresses, names);
     }
@@ -31,6 +35,7 @@ public class AssignmentMatrix {
      * The vectors rowCoverings and colCoverings are initialized so that all entries are false.
      */
     void initializeFields(final List<String> addresses, final List<String> names) {
+        isTransposed = false;
         costMatrix = new double[addresses.size()][names.size()];
         for (int i = 0; i < addresses.size(); i++) {
             for (int j = 0; j < names.size(); j++) {
@@ -39,6 +44,7 @@ public class AssignmentMatrix {
         }
 
         if (names.size() < addresses.size()) {
+            isTransposed = true;
             costMatrix = ArrayUtils.transpose(costMatrix);
             markedZeroes = new int[names.size()][addresses.size()]; // initialize to all zeroes
             rowCoverings = new boolean[names.size()];
@@ -48,6 +54,13 @@ public class AssignmentMatrix {
             rowCoverings = new boolean[addresses.size()];
             colCoverings = new boolean[names.size()];
         }
+    }
+
+    /**
+     * Returns the number of assignments necessary for a solution to the assignment problem
+     */
+    public int getNumAssignmentsNecessaryForSolution() {
+        return costMatrix.length;
     }
 
     /**
@@ -70,8 +83,9 @@ public class AssignmentMatrix {
     /**
      * Marks columns with starred zeroes as covered
      */
-    public void coverColumnsWithStarredZero() {
-
+    public int coverColumnsWithStarredZero() {
+        colCoverings = ArrayUtils.coverColumnsWithStarredZeroes(markedZeroes, colCoverings);
+        return ArrayUtils.numTrueValues(colCoverings);
     }
 
     // Getters for testing

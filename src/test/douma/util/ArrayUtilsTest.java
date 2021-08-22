@@ -54,4 +54,32 @@ public class ArrayUtilsTest {
         Assert.assertEquals(0, markings[0][0]);
         Assert.assertEquals(0, markings[2][1]);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCoverColumnsWithStarredZeroesShouldThrowException() {
+        int[][] starredZeroes = {{0,0,1}, {2,0,0}, {1,2,0}};
+        boolean[] coveredColumns = new boolean[2];
+        coveredColumns = ArrayUtils.coverColumnsWithStarredZeroes(starredZeroes, coveredColumns);
+    }
+
+    @Test
+    public void testCoverColumnsWithStarredZeroes() {
+        int[][] starredZeroes = {{0,0,1}, {2,0,0}, {1,2,0}};
+        boolean[] coveredColumns = new boolean[3];
+        coveredColumns = ArrayUtils.coverColumnsWithStarredZeroes(starredZeroes, coveredColumns);
+        Assert.assertTrue(coveredColumns[0]);
+        Assert.assertFalse(coveredColumns[1]);
+        Assert.assertTrue(coveredColumns[2]);
+    }
+
+    @Test
+    public void testNumTrueValues() {
+        boolean[] values = {false, false, false};
+        int num = ArrayUtils.numTrueValues(values);
+        Assert.assertEquals(0, num);
+
+        values = new boolean[]{false, true, true, false};
+        num = ArrayUtils.numTrueValues(values);
+        Assert.assertEquals(2, num);
+    }
 }
