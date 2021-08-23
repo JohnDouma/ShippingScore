@@ -154,7 +154,7 @@ public class AssignmentMatrix {
                     }
                 }
                 for (int i = 0; i < colCoverings.length; i++) {
-                    if (colCoverings[i]) {
+                    if (!colCoverings[i]) {
                         costMatrix = ArrayUtils.subtractFromColumn(costMatrix, i, minimum);
                     }
                 }
