@@ -1,0 +1,23 @@
+This project was build using Intellij. 
+
+I wanted to re-use the Google OR tools to solve the assignment problem but the library is only compatible with Intellij
+on the Mac. I have a Windows box so I was unable to re-use this library.
+
+The implementation of the Munkres Assignment algorithm is based upon the algorithm at https://brc2.com/the-algorithm-workshop/
+
+The basic steps are as follows:
+
+The following 6-step algorithm is a modified form of the original Munkres’ Assignment Algorithm (sometimes referred to as the Hungarian Algorithm).  This algorithm describes to the manual manipulation of a two-dimensional matrix by starring and priming zeros and by covering and uncovering rows and columns.  This is because, at the time of publication (1957), few people had access to a computer and the algorithm was exercised by hand.
+Step 0:  Create an nxm  matrix called the cost matrix in which each element represents the cost of assigning one of n workers to one of m jobs.  Rotate the matrix so that there are at least as many columns as rows and let k=min(n,m).
+
+Step 1:  For each row of the matrix, find the smallest element and subtract it from every element in its row.  Go to Step 2.
+
+Step 2:  Find a zero (Z) in the resulting matrix.  If there is no starred zero in its row or column, star Z. Repeat for each element in the matrix. Go to Step 3.
+
+Step 3:  Cover each column containing a starred zero.  If K columns are covered, the starred zeros describe a complete set of unique assignments.  In this case, Go to DONE, otherwise, Go to Step 4.
+
+Step 4:  Find a noncovered zero and prime it.  If there is no starred zero in the row containing this primed zero, Go to Step 5.  Otherwise, cover this row and uncover the column containing the starred zero. Continue in this manner until there are no uncovered zeros left. Save the smallest uncovered value and Go to Step 6.
+
+Step 5:  Construct a series of alternating primed and starred zeros as follows.  Let Z0 represent the uncovered primed zero found in Step 4.  Let Z1 denote the starred zero in the column of Z0 (if any). Let Z2 denote the primed zero in the row of Z1 (there will always be one).  Continue until the series terminates at a primed zero that has no starred zero in its column.  Unstar each starred zero of the series, star each primed zero of the series, erase all primes and uncover every line in the matrix.  Return to Step 3.
+
+Step 6:  Add the value found in Step 4 to every element of each covered row, and subtract it from every element of each uncovered column.  Return to Step 4 without altering any stars, primes, or covered lines.
