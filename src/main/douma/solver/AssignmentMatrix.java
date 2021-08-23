@@ -1,6 +1,7 @@
 package douma.solver;
 
 import douma.util.ArrayUtils;
+import douma.util.Pair;
 import douma.util.ScoreUtils;
 
 import java.util.List;
@@ -86,6 +87,44 @@ public class AssignmentMatrix {
     public int coverColumnsWithStarredZero() {
         colCoverings = ArrayUtils.coverColumnsWithStarredZeroes(markedZeroes, colCoverings);
         return ArrayUtils.numTrueValues(colCoverings);
+    }
+
+    /**
+     * Ensure all zeroes of the cost matrix are covered
+     * If a primed zero exists in a row without another started zero we return the location of that zero.
+     * If all zeroes are covered we return null.
+     */
+    public Pair<Integer, Integer> coverAllZeroes() {
+        while (hasUncoveredZeroes()) {
+            for (int i = 0; i < costMatrix.length; i++) {
+                for (int j = 0; j < costMatrix[0].length; j++) {
+                    if (costMatrix[i][j] == 0 && !rowCoverings[i] && !colCoverings[j]) {
+                        markedZeroes[i][j] = ArrayUtils.PRIME;
+                        if (!ArrayUtils.hasStars(markedZeroes[i])) {
+                            return new Pair(i, j);
+                        }
+                        rowCoverings[i] = true;
+                        colCoverings[j] = false;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * Returns true if costMatrix has uncovered zeroes
+     */
+    private boolean hasUncoveredZeroes() {
+        for (int i = 0; i < costMatrix.length; i++) {
+            for (int j=0; j< costMatrix[0].length; j++) {
+                if (costMatrix[i][j] == 0 && !rowCoverings[i] && !colCoverings[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Getters for testing

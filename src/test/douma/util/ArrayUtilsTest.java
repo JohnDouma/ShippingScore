@@ -104,4 +104,19 @@ public class ArrayUtilsTest {
         hasStar = ArrayUtils.hasStars(values);
         Assert.assertTrue(hasStar);
     }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetColumnFromArrayThrowsException() {
+        int[][] array = {{0,0,1}, {2,0,0}, {1,2,0}};
+        int[] column = ArrayUtils.getColumnFromArray(array, 3);
+    }
+
+    @Test
+    public void testGetColumnFromArray() {
+        int[][] array = {{0,0,1}, {2,0,0}, {1,2,0}};
+        int[] column = ArrayUtils.getColumnFromArray(array, 1);
+        Assert.assertEquals(0, column[0]);
+        Assert.assertEquals(0, column[1]);
+        Assert.assertEquals(2, column[2]);
+    }
 }

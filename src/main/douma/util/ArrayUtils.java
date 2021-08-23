@@ -119,7 +119,7 @@ public class ArrayUtils {
      * Return the number of <code>true</code></> elements in a boolean array
      * @param array non-null array of boolean values
      */
-    public static int numTrueValues(boolean[] array) {
+    public static int numTrueValues(final boolean[] array) {
         int numTrue = 0;
         for (int i = 0; i < array.length; i++) {
             if (array[i]) {
@@ -138,7 +138,7 @@ public class ArrayUtils {
      *
      * @return number of entries equal to STAR
      */
-    public static int numStarred(int[] array) {
+    public static int numStarred(final int[] array) {
         int numStars = 0;
         for (int i = 0; i < array.length; i++) {
             if (array[i] == STAR) {
@@ -152,7 +152,22 @@ public class ArrayUtils {
      * Returns, <code>true</code> if the array has any elements equal to START, <code>false</code> otherwise
      * @param array non-null array of integers
      */
-    public static boolean hasStars(int[] array) {
+    public static boolean hasStars(final int[] array) {
         return numStarred(array) > 0;
+    }
+
+    /**
+     * Extracts
+     * @param array non-null integer array
+     * @param colNumber column number to retrieve
+     * @throws IndexOutOfBoundsException if colNumber is greater than the number of columns of array
+     *
+     */
+    public static int[] getColumnFromArray(final int[][] array, int colNumber) {
+        int[] retArray = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            retArray[i] = array[i][colNumber];
+        }
+        return retArray;
     }
 }

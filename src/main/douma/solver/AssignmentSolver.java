@@ -21,6 +21,8 @@ public class AssignmentSolver {
         STAR_ZEROES,
         COVER_COLUMNS,
         PRIME_ZEROES,
+        REMOVE_PRIMES,
+        ADJUST_MATRIX,
         DONE
     }
 
@@ -56,6 +58,9 @@ public class AssignmentSolver {
                     break;
                 case PRIME_ZEROES:
                     state = primeUncoveredZeroes();
+                    break;
+                case ADJUST_MATRIX:
+                    // TODO
                     break;
                 default:
                     throw new NotImplementedException();
@@ -102,6 +107,16 @@ public class AssignmentSolver {
     }
 
     STATE primeUncoveredZeroes() {
+        Pair<Integer, Integer> pair = assignmentMatrix.coverAllZeroes();
+        return pair != null ? STATE.REMOVE_PRIMES:
+                STATE.ADJUST_MATRIX;
+    }
+
+    STATE removedPrimedZeroes() {
+        return STATE.DONE; // TODO
+    }
+
+    STATE adjustCostMatrix() {
         return STATE.DONE; // TODO
     }
 }
