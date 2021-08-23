@@ -20,9 +20,9 @@ public class Main {
         double totalScore = solver.solve();
         List<Pair<String,String>> assignments = solver.getAssignments();
 
-        System.out.printf("The sum of the scores is %d\n", totalScore);
+        System.out.printf("The sum of the scores is %f\n", totalScore);
         for (Pair<String, String> pair: assignments) {
-            System.out.printf("Address %s assigned to driver %s", pair.first, pair.second);
+            System.out.printf("Address %s assigned to driver %s\n", pair.first, pair.second);
         }
     }
 }

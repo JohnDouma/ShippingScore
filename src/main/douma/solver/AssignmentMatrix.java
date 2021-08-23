@@ -141,6 +141,13 @@ public class AssignmentMatrix {
                         markedZeroes[index.first][index.second] = STAR;
                     }
                 }
+                for (int i = 0; i < markedZeroes.length; i++) {
+                    for (int j = 0; j < markedZeroes[0].length; j++) {
+                        if (markedZeroes[i][j] == PRIME) {
+                            markedZeroes[i][j] = 0;
+                        }
+                    }
+                }
                 // Uncover rows and columns
                 rowCoverings = new boolean[costMatrix.length];
                 colCoverings = new boolean[costMatrix[0].length];
