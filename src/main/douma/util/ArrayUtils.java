@@ -7,6 +7,9 @@ import java.util.HashSet;
  */
 public class ArrayUtils {
 
+    public static int STAR = 1;
+    public static int PRIME = 2;
+
     /**
      * Finds the minimum value in an array of doubles
      * @param array non-null array of doubles
@@ -76,7 +79,7 @@ public class ArrayUtils {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 if (matrix[i][j] == 0 && !markedRows.contains(i) && !markedCols.contains(j)) {
-                    markMatrix[i][j] = 1;
+                    markMatrix[i][j] = STAR;
                     markedRows.add(i);
                     markedCols.add(j);
                 }
@@ -104,7 +107,7 @@ public class ArrayUtils {
 
         for (int i = 0; i < starredZeroes.length; i++) {
             for (int j = 0; j < starredZeroes[0].length; j++) {
-                if (starredZeroes[i][j] == 1) {
+                if (starredZeroes[i][j] == STAR) {
                     coveredColumns[j] = true;
                 }
             }
@@ -124,5 +127,32 @@ public class ArrayUtils {
             }
         }
         return numTrue;
+    }
+
+    /**
+     * Return number of entries in an integer array equal to STAR. The humber 1 represents a star
+     * in accordance with the Munkres Assignment algorithm. See https://brc2.com/the-algorithm-workshop/
+     * for details.
+     *
+     * @param array non-null integer array
+     *
+     * @return number of entries equal to STAR
+     */
+    public static int numStarred(int[] array) {
+        int numStars = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == STAR) {
+                numStars++;
+            }
+        }
+        return numStars;
+    }
+
+    /**
+     * Returns, <code>true</code> if the array has any elements equal to START, <code>false</code> otherwise
+     * @param array non-null array of integers
+     */
+    public static boolean hasStars(int[] array) {
+        return numStarred(array) > 0;
     }
 }

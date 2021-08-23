@@ -17,7 +17,7 @@ public class AssignmentMatrix {
     private boolean[] colCoverings;
 
     // The algorithm expects the column size to be greater than or equal to the row size. If there
-    // are more addressed than drivers we transpose the matrix.
+    // are more addresses than drivers we transpose the matrix.
     private boolean isTransposed;
 
     public AssignmentMatrix(final List<String> addresses, final List<String> names) {

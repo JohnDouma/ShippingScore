@@ -55,15 +55,15 @@ public class AssignmentSolver {
                     state = coverColumnsWithMarkedZeroes();
                     break;
                 case PRIME_ZEROES:
-                    state = markZeroesWithPrimes();
-                    break;
-                case DONE:
-                    //TODO
+                    state = primeUncoveredZeroes();
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
+
+        // TODO Get assignments from the assignmentMatrix and compute their total sum
+        //      which is returned below
         return 0.0;
     }
 
@@ -101,7 +101,7 @@ public class AssignmentSolver {
         return STATE.PRIME_ZEROES;
     }
 
-    STATE markZeroesWithPrimes() {
+    STATE primeUncoveredZeroes() {
         return STATE.DONE; // TODO
     }
 }

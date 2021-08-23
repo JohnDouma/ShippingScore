@@ -82,4 +82,26 @@ public class ArrayUtilsTest {
         num = ArrayUtils.numTrueValues(values);
         Assert.assertEquals(2, num);
     }
+
+    @Test
+    public void testNumStarredValues() {
+        int[] values = new int[5];
+        int num = ArrayUtils.numStarred(values);
+        Assert.assertEquals(0, num);
+
+        values = new int[] {0, ArrayUtils.PRIME, ArrayUtils.STAR, ArrayUtils.STAR, 0, 0};
+        num = ArrayUtils.numStarred(values);
+        Assert.assertEquals(2, num);
+    }
+
+    @Test
+    public void testHasStars() {
+        int[] values = new int[5];
+        boolean hasStar = ArrayUtils.hasStars(values);
+        Assert.assertFalse(hasStar);
+
+        values = new int[] {0, ArrayUtils.PRIME, ArrayUtils.STAR, ArrayUtils.STAR, 0, 0};
+        hasStar = ArrayUtils.hasStars(values);
+        Assert.assertTrue(hasStar);
+    }
 }
