@@ -1,6 +1,7 @@
 package douma.solver;
 
 import douma.util.Pair;
+import douma.util.ScoreUtils;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -20,9 +21,7 @@ public class AssignmentSolver {
         ZEROIZE_MINIMA,
         STAR_ZEROES,
         COVER_COLUMNS,
-        PRIME_ZEROES,
-        REMOVE_PRIMES,
-        ADJUST_MATRIX,
+        INSUFFICIENT_ASSIGNMENTS,
         DONE
     }
 
@@ -56,23 +55,20 @@ public class AssignmentSolver {
                 case COVER_COLUMNS:
                     state = coverColumnsWithMarkedZeroes();
                     break;
-                case PRIME_ZEROES:
-                    state = primeUncoveredZeroes();
-                    break;
-                case REMOVE_PRIMES:
-                    state = removedPrimedZeroes();
-                    break;
-                case ADJUST_MATRIX:
-                    // TODO
+                case INSUFFICIENT_ASSIGNMENTS:
+                    state = increaseStarredZeroes();
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        // TODO Get assignments from the assignmentMatrix and compute their total sum
-        //      which is returned below
-        return 0.0;
+        assignments = assignmentMatrix.getAssignments();
+        double totalScore = 0;
+        for (Pair<String, String> pair: assignments) {
+            totalScore += ScoreUtils.suitabilityScore(pair.first, pair.second);
+        }
+        return totalScore;
     }
 
     /**
@@ -106,21 +102,11 @@ public class AssignmentSolver {
             return STATE.DONE;
         }
 
-        return STATE.PRIME_ZEROES;
+        return STATE.INSUFFICIENT_ASSIGNMENTS;
     }
 
-    STATE primeUncoveredZeroes() {
-        AssignmentMatrix.NEXT_STATE nextState = assignmentMatrix.coverAllZeroes();
-        return nextState == AssignmentMatrix.NEXT_STATE.REMOVE_PRIMES ? STATE.REMOVE_PRIMES:
-                STATE.ADJUST_MATRIX;
-    }
-
-    STATE removedPrimedZeroes() {
-        assignmentMatrix.removePrimedZeroes();
+    STATE increaseStarredZeroes() {
+        assignmentMatrix.increaseStarredZeroes();
         return STATE.COVER_COLUMNS;
-    }
-
-    STATE adjustCostMatrix() {
-        return STATE.DONE; // TODO
     }
 }

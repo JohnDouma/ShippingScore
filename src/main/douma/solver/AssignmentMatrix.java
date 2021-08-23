@@ -1,9 +1,13 @@
 package douma.solver;
 
 import douma.util.ArrayUtils;
+import douma.util.Pair;
 import douma.util.ScoreUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static douma.util.ArrayUtils.*;
 
 /**
  * Matrix representation used in the assignment problem. In addition to operations associated
@@ -15,17 +19,13 @@ public class AssignmentMatrix {
     private int[][] markedZeroes;
     private boolean[] rowCoverings;
     private boolean[] colCoverings;
-
-    public enum NEXT_STATE {
-        REMOVE_PRIMES,
-        ADJUST_MATRIX
-    }
-
-    // The algorithm expects the column size to be greater than or equal to the row size. If there
-    // are more addresses than drivers we transpose the matrix.
+    private List<String> addresses;
+    private List<String> names;
     private boolean isTransposed;
 
     public AssignmentMatrix(final List<String> addresses, final List<String> names) {
+        this.addresses = addresses;
+        this.names = names;
         initializeFields(addresses, names);
     }
 
@@ -40,7 +40,6 @@ public class AssignmentMatrix {
      * The vectors rowCoverings and colCoverings are initialized so that all entries are false.
      */
     void initializeFields(final List<String> addresses, final List<String> names) {
-        isTransposed = false;
         costMatrix = new double[addresses.size()][names.size()];
         for (int i = 0; i < addresses.size(); i++) {
             for (int j = 0; j < names.size(); j++) {
@@ -55,6 +54,7 @@ public class AssignmentMatrix {
             rowCoverings = new boolean[names.size()];
             colCoverings = new boolean[addresses.size()];
         } else {
+            isTransposed = false;
             markedZeroes = new int[addresses.size()][names.size()]; // initialize to all zeroes
             rowCoverings = new boolean[addresses.size()];
             colCoverings = new boolean[names.size()];
@@ -94,48 +94,99 @@ public class AssignmentMatrix {
     }
 
     /**
-     * Ensure all zeroes of the cost matrix are covered
-     * If a primed zero exists in a row without another started zero we return the location of that zero.
-     * If all zeroes are covered we return null.
+     * Try to find additional assignments
      */
-    public NEXT_STATE coverAllZeroes() {
-        while (hasUncoveredZeroes()) {
+    public void increaseStarredZeroes() {
+        boolean done = false;
+        int rowIndexOfPrime = -1;
+        int colIndexOfPrime = -1;
+        // done will be set to true when either all zeroes are covered or there is an uncovered zero
+        // with no starred zeroes in its row
+        while (!done) {
             for (int i = 0; i < costMatrix.length; i++) {
                 for (int j = 0; j < costMatrix[0].length; j++) {
                     if (costMatrix[i][j] == 0 && !rowCoverings[i] && !colCoverings[j]) {
                         markedZeroes[i][j] = ArrayUtils.PRIME;
-                        if (!ArrayUtils.hasStars(markedZeroes[i])) {
-                            return NEXT_STATE.REMOVE_PRIMES;
+                        if (ArrayUtils.hasStars(markedZeroes[i])) {
+                            int indexOfStar = ArrayUtils.findIndexOf(markedZeroes[i], STAR);
+                            rowCoverings[i] = true;
+                            colCoverings[indexOfStar] = false;
+                        } else {
+                            rowIndexOfPrime = i;
+                            colIndexOfPrime = j;
+                            done = true;
+                            break;
                         }
-                        rowCoverings[i] = true;
-                        colCoverings[j] = false;
+                    }
+                }
+            }
+
+            if (done) {
+                // We have primed zero in row without starred zero
+                List<Pair<Integer, Integer>> sequenceOfPrimedAndStarredZeroes = new ArrayList<>();
+                sequenceOfPrimedAndStarredZeroes.add(new Pair<>(rowIndexOfPrime, colIndexOfPrime));
+                int[] column = ArrayUtils.getColumnFromArray(markedZeroes, colIndexOfPrime);
+                rowIndexOfPrime = ArrayUtils.findIndexOf(column, STAR);
+                while (rowIndexOfPrime != -1) {
+                    sequenceOfPrimedAndStarredZeroes.add(new Pair<>(rowIndexOfPrime, colIndexOfPrime));
+                    colIndexOfPrime = ArrayUtils.findIndexOf(markedZeroes[rowIndexOfPrime], PRIME);
+                    sequenceOfPrimedAndStarredZeroes.add(new Pair<>(rowIndexOfPrime, colIndexOfPrime));
+                    column = ArrayUtils.getColumnFromArray(markedZeroes, colIndexOfPrime);
+                    rowIndexOfPrime = ArrayUtils.findIndexOf(column, STAR);
+                }
+                for (Pair<Integer, Integer> index: sequenceOfPrimedAndStarredZeroes) {
+                    if (markedZeroes[index.first][index.second] == STAR) {
+                        markedZeroes[index.first][index.second] = 0;
+                    } else if (markedZeroes[index.first][index.second] == PRIME) {
+                        markedZeroes[index.first][index.second] = STAR;
+                    }
+                }
+                // Uncover rows and columns
+                rowCoverings = new boolean[costMatrix.length];
+                colCoverings = new boolean[costMatrix[0].length];
+            } else {
+                // add minimum uncovered value to each covered row of costMatrix and subtract
+                // minimum uncovered value from each uncovered column
+                double minimum = findMinimumUncoveredValue();
+                for (int i = 0; i < rowCoverings.length; i++) {
+                    if (rowCoverings[i]) {
+                        costMatrix = ArrayUtils.addToRow(costMatrix, i, minimum);
+                    }
+                }
+                for (int i = 0; i < colCoverings.length; i++) {
+                    if (colCoverings[i]) {
+                        costMatrix = ArrayUtils.subtractFromColumn(costMatrix, i, minimum);
                     }
                 }
             }
         }
-
-        return NEXT_STATE.ADJUST_MATRIX;
     }
 
     /**
-     * Convert all primed zeroes to starred zeroes and remove row and column coverings
+     * Return list of assignments of addresses to drivers
      */
-    public void removePrimedZeroes() {
-
-    }
-
-    /*
-     * Returns true if costMatrix has uncovered zeroes
-     */
-    private boolean hasUncoveredZeroes() {
-        for (int i = 0; i < costMatrix.length; i++) {
-            for (int j=0; j< costMatrix[0].length; j++) {
-                if (costMatrix[i][j] == 0 && !rowCoverings[i] && !colCoverings[j]) {
-                    return true;
+    public List<Pair<String, String>> getAssignments() {
+        List<Pair<String, String>> retList = new ArrayList<>();
+        for (int i = 0; i < markedZeroes.length; i++) {
+            for (int j = 0; j < markedZeroes[0].length; j++) {
+                if (markedZeroes[i][j] == STAR) {
+                    retList.add(isTransposed ? new Pair<>(addresses.get(j), names.get(i)) : new Pair<>(addresses.get(i), names.get(j)));
                 }
             }
         }
-        return false;
+        return retList;
+    }
+
+    private double findMinimumUncoveredValue() {
+        double minimum = Double.MAX_VALUE;
+        for (int i = 0; i < costMatrix.length; i++) {
+            for (int j = 0; j < costMatrix[0].length; j++) {
+                if (!rowCoverings[i] && !colCoverings[j] && costMatrix[i][j] < minimum) {
+                    minimum = costMatrix[i][j];
+                }
+            }
+        }
+        return minimum;
     }
 
     // Getters for testing

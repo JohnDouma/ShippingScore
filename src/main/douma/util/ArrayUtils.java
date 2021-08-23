@@ -157,6 +157,23 @@ public class ArrayUtils {
     }
 
     /**
+     * Returns the index of the first instance of <code>value</code> found in the input array
+     * @param array non-null integer array
+     *
+     * @return index of first STAR found, -1 if not found
+     */
+    public static int findIndexOf(int[] array, int value) {
+        int index = -1;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    /**
      * Extracts
      * @param array non-null integer array
      * @param colNumber column number to retrieve
@@ -169,5 +186,38 @@ public class ArrayUtils {
             retArray[i] = array[i][colNumber];
         }
         return retArray;
+    }
+
+    /**
+     * Subtract value from each entry in the given column of the input array
+     *
+     * @param array non-null array of doubles
+     * @param colNumber column from which to subtract values
+     * @param value number to be subtracted
+     *
+     * @throws IndexOutOfBoundsException if colNumber is invalid
+     */
+    public static double[][] subtractFromColumn(double[][] array, int colNumber, double value) {
+        for (int i = 0; i < array.length; i++) {
+            array[i][colNumber] -= value;
+        }
+
+        return array;
+    }
+
+    /**
+     * Add value to each entry in the given row of the input array
+     *
+     * @param array non-null array of doubles
+     * @param rowNumber row to which to add values
+     * @param value number to be added
+     *
+     * @throws IndexOutOfBoundsException if colNumber is invalid
+     */
+    public static double[][] addToRow(double[][] array, int rowNumber, double value) {
+        for (int i = 0; i < array[0].length; i++) {
+            array[rowNumber][i] += value;
+        }
+        return array;
     }
 }
