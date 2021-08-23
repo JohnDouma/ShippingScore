@@ -59,6 +59,9 @@ public class AssignmentSolver {
                 case PRIME_ZEROES:
                     state = primeUncoveredZeroes();
                     break;
+                case REMOVE_PRIMES:
+                    state = removedPrimedZeroes();
+                    break;
                 case ADJUST_MATRIX:
                     // TODO
                     break;
@@ -107,13 +110,14 @@ public class AssignmentSolver {
     }
 
     STATE primeUncoveredZeroes() {
-        Pair<Integer, Integer> pair = assignmentMatrix.coverAllZeroes();
-        return pair != null ? STATE.REMOVE_PRIMES:
+        AssignmentMatrix.NEXT_STATE nextState = assignmentMatrix.coverAllZeroes();
+        return nextState == AssignmentMatrix.NEXT_STATE.REMOVE_PRIMES ? STATE.REMOVE_PRIMES:
                 STATE.ADJUST_MATRIX;
     }
 
     STATE removedPrimedZeroes() {
-        return STATE.DONE; // TODO
+        assignmentMatrix.removePrimedZeroes();
+        return STATE.COVER_COLUMNS;
     }
 
     STATE adjustCostMatrix() {

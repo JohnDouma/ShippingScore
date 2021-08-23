@@ -1,7 +1,6 @@
 package douma.solver;
 
 import douma.util.ArrayUtils;
-import douma.util.Pair;
 import douma.util.ScoreUtils;
 
 import java.util.List;
@@ -16,6 +15,11 @@ public class AssignmentMatrix {
     private int[][] markedZeroes;
     private boolean[] rowCoverings;
     private boolean[] colCoverings;
+
+    public enum NEXT_STATE {
+        REMOVE_PRIMES,
+        ADJUST_MATRIX
+    }
 
     // The algorithm expects the column size to be greater than or equal to the row size. If there
     // are more addresses than drivers we transpose the matrix.
@@ -94,14 +98,14 @@ public class AssignmentMatrix {
      * If a primed zero exists in a row without another started zero we return the location of that zero.
      * If all zeroes are covered we return null.
      */
-    public Pair<Integer, Integer> coverAllZeroes() {
+    public NEXT_STATE coverAllZeroes() {
         while (hasUncoveredZeroes()) {
             for (int i = 0; i < costMatrix.length; i++) {
                 for (int j = 0; j < costMatrix[0].length; j++) {
                     if (costMatrix[i][j] == 0 && !rowCoverings[i] && !colCoverings[j]) {
                         markedZeroes[i][j] = ArrayUtils.PRIME;
                         if (!ArrayUtils.hasStars(markedZeroes[i])) {
-                            return new Pair(i, j);
+                            return NEXT_STATE.REMOVE_PRIMES;
                         }
                         rowCoverings[i] = true;
                         colCoverings[j] = false;
@@ -110,7 +114,14 @@ public class AssignmentMatrix {
             }
         }
 
-        return null;
+        return NEXT_STATE.ADJUST_MATRIX;
+    }
+
+    /**
+     * Convert all primed zeroes to starred zeroes and remove row and column coverings
+     */
+    public void removePrimedZeroes() {
+
     }
 
     /*
